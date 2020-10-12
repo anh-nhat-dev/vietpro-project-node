@@ -1,20 +1,29 @@
 // Load module express
 const express = require("express");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 // Khởi tạo ứng dụng từ express
 const app = express();
 
 const config = require("config");
-
-// Kết nối tới database
-
-require("../common/database");
-
 // Lấy ra config của ứng dụng
 const appConfig = config.get("app");
 
-// Static file
+// set cookie & session
+app.use(cookieParser());
+app.use(
+  session({
+    secret: appConfig.cookie_secret,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
+// Kết nối tới database
+require("../common/database");
+
+// Static file
 app.use("/static", express.static(appConfig.static_folder));
 app.set("views", appConfig.view_folder);
 app.set("view engine", appConfig.template_engine);

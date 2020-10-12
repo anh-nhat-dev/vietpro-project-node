@@ -6,6 +6,10 @@ const app = express();
 
 const config = require("config");
 
+// Kết nối tới database
+
+require("../common/database");
+
 // Lấy ra config của ứng dụng
 const appConfig = config.get("app");
 

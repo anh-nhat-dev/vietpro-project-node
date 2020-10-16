@@ -24,6 +24,7 @@ const productSchema = new mongoose.Schema(
     },
     cat_id: {
       type: mongoose.Types.ObjectId,
+      ref: "Category",
       default: null,
     },
     status: {

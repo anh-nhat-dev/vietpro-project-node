@@ -37,7 +37,6 @@
 
 						    <thead>
 						    <tr>
-						        <th data-field="id" data-sortable="true">ID</th>
 						        <th data-field="name"  data-sortable="true">Tên sản phẩm</th>
                                 <th data-field="price" data-sortable="true">Giá</th>
                                 <th>Ảnh sản phẩm</th>
@@ -47,41 +46,48 @@
 						    </tr>
                             </thead>
                             <tbody>
+                            <% for (let prod of products) { %>
                                     <tr>
-                                        <td style="">1</td>
-                                        <td style="">Sản phẩm số 1</td>
-                                        <td style="">18.500.000 vnd</td>
-                                        <td style="text-align: center"><img width="130" height="180" src="img/download.jpeg" /></td>
-                                        <td><span class="label label-success">Còn hàng</span></td>
-                                        <td>Danh mục số 1</td>
+                                        <td style=""><%= prod.name %></td>
+                                        <td style=""><%= prod.price %> vnd</td>
+                                        <td style="text-align: center"><img width="130" height="180" src="/static/images/<%= prod.thumbnail %>" /></td>
+                                        <td>
+                                            <% if (prod.is_stock) { %>
+                                                <span class="label label-success">Còn hàng</span>
+                                            <% } else { %>
+                                                <span class="label label-danger">Hết hàng</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= prod.cat_id.title %></td>
                                         <td class="form-group">
                                             <a href="product-edit.html" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></a>
                                             <a href="product-edit.html" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a>
                                         </td>
                                     </tr>
-                                    <tr>
-                                            <td style="">1</td>
-                                            <td style="">Sản phẩm số 2</td>
-                                            <td style="">18.500.000 vnd</td>
-                                            <td style="text-align: center"><img width="130" height="180" src="img/download.jpeg" /></td>
-                                            <td><span class="label label-danger">Hết hàng</span></td>
-                                            <td>Danh mục số 1</td>
-                                            <td class="form-group">
-                                                <a href="product-edit.html" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></a>
-                                                <a href="product-edit.html" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></a>
-                                            </td>
-                                        </tr>
+
+                            <% } %>
                                  </tbody>
 						</table>
                     </div>
                     <div class="panel-footer">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
-                                <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                                <% if (page > 1) { %>
+                                <li class="page-item"><a class="page-link" href="/admin/products?page=<%= page - 1 %>">&laquo;</a></li>
+                                <% } %>
+                                
+                                <% pages.forEach((i) => { %>
+                                    <% if (i === "...") { %>
+                                        <li class="page-item"><span><%= i %></span></li>
+                                    <% } else { %>
+                                        <li class="page-item <%= page === i ? "active":"" %>"><a class="page-link" href="/admin/products?page=<%= i %>"><%= i %></a></li>
+                                    <%  } %>
+                                
+                                <% }) %>
+
+                                <% if (page < totalPage) { %>
+                                <li class="page-item"><a class="page-link" href="/admin/products?page=<%= page + 1 %>">&raquo;</a></li>
+                                 <% } %>
                             </ul>
                         </nav>
                     </div>

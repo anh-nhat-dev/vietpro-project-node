@@ -17,5 +17,9 @@
     "express-session": "^1.17.1",
     "mongoose": "^5.10.9",
     "nodemon": "^2.0.4"
+  },
+  "devDependencies": {
+    "faker": "^5.1.0",
+    "slug": "^3.5.1"
   }
 }

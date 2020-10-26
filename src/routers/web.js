@@ -23,9 +23,10 @@ const router = express.Router();
 router.get("/", SiteController.home);
 router.get("/cart", SiteController.cart);
 router.get("/category-:slug.:id", SiteController.category);
-router.get("/product", SiteController.product);
+router.get("/product-:slug.:id", SiteController.product);
 router.get("/search", SiteController.search);
 router.get("/success", SiteController.success);
+router.post("/comments", SiteController.comment);
 
 // Admin
 router

@@ -1,6 +1,8 @@
 const ProductModel = require("../models/product");
 const CategoryModel = require("../models/category");
+const CommentModel = require("../models/comment");
 const paginate = require("../../common/paginate");
+
 module.exports.home = async (req, res) => {
   const products = await ProductModel.find({ is_stock: true }).limit(6);
   const productsFeatureds = await ProductModel.find({
@@ -36,8 +38,25 @@ module.exports.category = async (req, res) => {
   });
 };
 
-module.exports.product = (req, res) => {
-  res.render("site/product");
+module.exports.product = async (req, res) => {
+  const id = req.params.id;
+  const page = parseInt(req.query.page) || 1;
+  const product = await ProductModel.findById(id);
+
+  const filter = { prd_id: id };
+  const limit = 12;
+  const skip = limit * page - limit;
+  const total = await ProductModel.find(filter).countDocuments();
+  const totalPage = Math.ceil(total / limit);
+  const comments = await CommentModel.find(filter).limit(limit).skip(skip);
+
+  res.render("site/product", {
+    product,
+    comments,
+    totalPage,
+    page,
+    pages: paginate(page, totalPage),
+  });
 };
 
 module.exports.search = async (req, res) => {
@@ -67,4 +86,19 @@ module.exports.search = async (req, res) => {
 
 module.exports.success = (req, res) => {
   res.render("site/success");
+};
+
+module.exports.comment = async (req, res) => {
+  const body = req.body;
+
+  const comment = {
+    email: body.email,
+    full_name: body.full_name,
+    content: body.content,
+    prd_id: body.prd_id,
+  };
+
+  await new CommentModel(comment).save();
+
+  return res.redirect(body.url);
 };

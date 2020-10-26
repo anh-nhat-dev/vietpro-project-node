@@ -75,6 +75,52 @@ module.exports.store = async (req, res) => {
   return res.redirect("/admin/products");
 };
 
-module.exports.edit = (req, res) => {
-  res.render("admin/products/edit-product");
+module.exports.edit = async (req, res) => {
+  const id = req.params.id;
+
+  const product = await ProductModel.findById(id);
+  const categories = await Category.find();
+
+  res.render("admin/products/edit-product", {
+    product,
+    categories,
+  });
+};
+
+module.exports.update = async (req, res) => {
+  const body = req.body;
+  const file = req.file;
+  const id = req.params.id;
+
+  const product = {
+    name: body.prd_name,
+    slug: slug(body.prd_name, { lower: true }),
+    description: body.prd_details,
+    price: body.prd_price,
+    cat_id: body.cat_id,
+    status: body.prd_new,
+    featured: body.prd_featured === "on",
+    promotion: body.prd_promotion,
+    warranty: body.prd_warranty,
+    accessories: body.prd_accessories,
+    is_stock: body.prd_status,
+  };
+
+  if (file) {
+    const thumbnail = `products/${file.originalname}`;
+    // Di chuyển file từ thư mục temp sang thư mục chứa ảnh sản phẩm
+    fs.renameSync(file.path, path.resolve("src/public/images", thumbnail));
+    product["thumbnail"] = thumbnail;
+  }
+
+  await ProductModel.updateOne({ _id: id }, { $set: product });
+
+  return res.redirect("/admin/products");
+};
+
+module.exports.destroy = async (req, res) => {
+  const id = req.params.id;
+
+  await ProductModel.deleteOne({ _id: id });
+  return res.redirect("/admin/products");
 };

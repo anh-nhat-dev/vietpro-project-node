@@ -38,6 +38,11 @@ router
   .get(Productcontroller.add)
   .post(UploadMiddleware.single("prd_image"), Productcontroller.store);
 
-router.get("/admin/products/edit", Productcontroller.edit);
+router
+  .route("/admin/products/edit/:id")
+  .get(Productcontroller.edit)
+  .post(UploadMiddleware.single("prd_image"), Productcontroller.update);
+
+router.get("/admin/products/delete/:id", Productcontroller.destroy);
 
 module.exports = router;

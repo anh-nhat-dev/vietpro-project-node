@@ -22,6 +22,7 @@ app.use(
 
 // Kết nối tới database
 require("../common/database");
+app.use(require("../apps/middlewares/share"));
 
 // Static file
 app.use("/static", express.static(appConfig.static_folder));

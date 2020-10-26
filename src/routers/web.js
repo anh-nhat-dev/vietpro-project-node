@@ -22,7 +22,7 @@ const router = express.Router();
 // Site
 router.get("/", SiteController.home);
 router.get("/cart", SiteController.cart);
-router.get("/category", SiteController.category);
+router.get("/category-:slug.:id", SiteController.category);
 router.get("/product", SiteController.product);
 router.get("/search", SiteController.search);
 router.get("/success", SiteController.success);

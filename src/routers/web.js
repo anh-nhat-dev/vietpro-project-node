@@ -2,7 +2,7 @@ const express = require("express");
 const AuthController = require("../apps/controllers/auth");
 const AdminController = require("../apps/controllers/admin");
 const Productcontroller = require("../apps/controllers/product");
-
+const SiteController = require("../apps/controllers/site");
 // Middleware
 const UploadMiddleware = require("../apps/middlewares/upload");
 
@@ -19,6 +19,15 @@ const router = express.Router();
 //   res.send("PRODUCTS PAGE");
 // });
 
+// Site
+router.get("/", SiteController.home);
+router.get("/cart", SiteController.cart);
+router.get("/category", SiteController.category);
+router.get("/product", SiteController.product);
+router.get("/search", SiteController.search);
+router.get("/success", SiteController.success);
+
+// Admin
 router
   .route("/admin/login")
   .all(AuthMiddleware.checkGuest)

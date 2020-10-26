@@ -1,8 +1,9 @@
 const ProductModel = require("../models/product");
 const Category = require("../models/category");
-
+const slug = require("slug");
 const paginate = require("../../common/paginate");
-
+const fs = require("fs");
+const path = require("path");
 // module.exports.index = async (req, res) => {
 //   const products = await ProductModel.find().populate("cat_id");
 
@@ -39,8 +40,39 @@ module.exports.index = async (req, res) => {
   });
 };
 
-module.exports.add = (req, res) => {
-  res.render("admin/products/add-product");
+module.exports.add = async (req, res) => {
+  const categories = await Category.find();
+  res.render("admin/products/add-product", { categories });
+};
+
+module.exports.store = async (req, res) => {
+  const body = req.body;
+  const file = req.file;
+
+  const product = {
+    name: body.prd_name,
+    slug: slug(body.prd_name, { lower: true }),
+    description: body.prd_details,
+    price: body.prd_price,
+    cat_id: body.cat_id,
+    status: body.prd_new,
+    featured: body.prd_featured === "on",
+    promotion: body.prd_promotion,
+    warranty: body.prd_warranty,
+    accessories: body.prd_accessories,
+    is_stock: body.prd_status,
+  };
+
+  if (file) {
+    const thumbnail = `products/${file.originalname}`;
+    // Di chuyển file từ thư mục temp sang thư mục chứa ảnh sản phẩm
+    fs.renameSync(file.path, path.resolve("src/public/images", thumbnail));
+    product["thumbnail"] = thumbnail;
+  }
+
+  await new ProductModel(product).save();
+
+  return res.redirect("/admin/products");
 };
 
 module.exports.edit = (req, res) => {

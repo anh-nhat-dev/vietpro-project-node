@@ -64,16 +64,15 @@
                                     <input required name="prd_image" type="file">
                                     <br>
                                     <div>
-                                        <img src="img/download.jpeg">
+                                        <img id="img_preview" width="200" src="">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Danh mục</label>
                                     <select name="cat_id" class="form-control">
-                                        <option value=1>iPhone</option>
-                                        <option value=2>Samsung</option>
-                                        <option value=3>Nokia</option>
-                                        <option value=4>LG</option>
+                                        <% for (let cate of categories) { %>
+                                            <option value="<%= cate._id %>"><%= cate.title %></option>
+                                        <% } %>
                                     </select>
                                 </div>
                                 
@@ -109,6 +108,22 @@
 	</div>	<!--/.main-->	
 
     <%- include("./../layout/footer") %>
+    <script>
+
+        $("input[name=prd_image]").on("change", function(e){
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                console.log("reader.onload -> evt", evt)
+                if (evt.target.result) {
+                    $("#img_preview").attr("src", evt.target.result)
+                }
+            }
+            if (e.target.files[0]) {
+            reader.readAsDataURL(e.target.files[0]);
+            }
+        })
+        
+    </script>
 </body>
 
 </html>

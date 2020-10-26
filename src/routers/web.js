@@ -4,6 +4,8 @@ const AdminController = require("../apps/controllers/admin");
 const Productcontroller = require("../apps/controllers/product");
 
 // Middleware
+const UploadMiddleware = require("../apps/middlewares/upload");
+
 const AuthMiddleware = require("../apps/middlewares/auth");
 
 // Khởi tạo router
@@ -30,7 +32,12 @@ router.use("/admin", AuthMiddleware.checkUser, AuthMiddleware.checkRole);
 router.get("/admin/logout", AuthController.logout);
 router.get("/admin/dashboard", AdminController.dashboard);
 router.get("/admin/products", Productcontroller.index);
-router.get("/admin/products/create", Productcontroller.add);
+
+router
+  .route("/admin/products/create")
+  .get(Productcontroller.add)
+  .post(UploadMiddleware.single("prd_image"), Productcontroller.store);
+
 router.get("/admin/products/edit", Productcontroller.edit);
 
 module.exports = router;

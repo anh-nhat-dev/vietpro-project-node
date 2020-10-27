@@ -22,12 +22,15 @@ const router = express.Router();
 // Site
 router.get("/", SiteController.home);
 router.get("/cart", SiteController.cart);
+router.get("/cart/:id/delete", SiteController.deleteCart);
 router.get("/category-:slug.:id", SiteController.category);
 router.get("/product-:slug.:id", SiteController.product);
 router.get("/search", SiteController.search);
-router.get("/success", SiteController.success);
+router.post("/success", SiteController.success);
 router.post("/comments", SiteController.comment);
 router.post("/add-to-cart", SiteController.addToCart);
+router.post("/cart", SiteController.updateCart);
+router.post("/order", SiteController.order);
 
 // Admin
 router

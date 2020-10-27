@@ -37,9 +37,9 @@
                         </div> 
                         
                         <div class="cart-quantity col-lg- col-md-2 col-sm-12">
-                        	<input type="number" id="quantity" class="form-control form-blue quantity" value="<%= item.qty%>" min="1">
+                        	<input type="number" id="quantity" class="form-control form-blue quantity" name="products[<%= item.id %>][qty]" value="<%= item.qty%>" min="1">
                         </div> 
-                        <div class="cart-price col-lg-3 col-md-3 col-sm-12"><b><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price) %></b><a href="#">Xóa</a></div>    
+                        <div class="cart-price col-lg-3 col-md-3 col-sm-12"><b><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price) %></b><a rel="delete" href="/cart/<%= item.id %>/delete">Xóa</a></div>    
                     </div>
                     <% } %> 
                       
@@ -57,7 +57,7 @@
                 
                 <!--	Customer Info	-->
                 <div id="customer">
-                	<form method="post">
+                	<form method="post" action="/order">
                     <div class="row">
                     	
                     	<div id="customer-name" class="col-lg-4 col-md-4 col-sm-12">
@@ -74,21 +74,16 @@
                         </div>
                         
                     </div>
-                    </form>
                     <div class="row">
                     	<div class="by-now col-lg-6 col-md-6 col-sm-12">
-                        	<a href="#">
+                        	<button type="submit" class="btn btn-danger">
                             	<b>Mua ngay</b>
                                 <span>Giao hàng tận nơi siêu tốc</span>
-                            </a>
-                        </div>
-                        <div class="by-now col-lg-6 col-md-6 col-sm-12">
-                        	<a href="#">
-                            	<b>Trả góp Online</b>
-                                <span>Vui lòng call (+84) 0988 550 553</span>
-                            </a>
+                            </button>
                         </div>
                     </div>
+                    </form>
+                    
                 </div>
                 <!--	End Customer Info	-->
           </div>
@@ -99,5 +94,13 @@
     </div>
     <!--	End Body	-->
     <%- include("layout/footer") %>
+    <script>
+      $(document).ready(function(){
+        $(document).on("click", "[rel=delete]", function(e){
+        const check = confirm("Bạn muốn xỏa sản phẩm này khỏi giỏ hàng");
+        if (!check) { return e.preventDefault() }
+      })
+      })
+    </script>
   </body>
 </html>

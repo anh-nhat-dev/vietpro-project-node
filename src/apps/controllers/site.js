@@ -2,6 +2,10 @@ const ProductModel = require("../models/product");
 const CategoryModel = require("../models/category");
 const CommentModel = require("../models/comment");
 const paginate = require("../../common/paginate");
+const transporter = require("../../common/transporter");
+const ejs = require("ejs");
+const path = require("path");
+const config = require("config");
 
 module.exports.home = async (req, res) => {
   const products = await ProductModel.find({ is_stock: true }).limit(6);
@@ -44,6 +48,28 @@ module.exports.addToCart = async (req, res) => {
   req.session.cart = items;
 
   return res.redirect("/cart");
+};
+
+module.exports.updateCart = (req, res) => {
+  const items = req.session.cart;
+  const products = req.body.products;
+
+  items.map((item) => {
+    if (products[item.id]) {
+      item.qty = parseInt(products[item.id]["qty"]);
+    }
+    return item;
+  });
+  req.session.cart = items;
+  res.redirect("/cart");
+};
+
+module.exports.deleteCart = (req, res) => {
+  const items = req.session.cart;
+  const id = req.params.id;
+
+  req.session.cart = items.filter((item) => item.id !== id);
+  res.redirect("/cart");
 };
 
 module.exports.category = async (req, res) => {
@@ -131,4 +157,31 @@ module.exports.comment = async (req, res) => {
   await new CommentModel(comment).save();
 
   return res.redirect(body.url);
+};
+
+module.exports.order = async (req, res) => {
+  const items = req.session.cart;
+  const body = req.body;
+
+  const viewPath = req.app.get("views");
+
+  const html = await ejs.renderFile(
+    path.join(viewPath, "site/email-order.ejs"),
+    {
+      name: body.name,
+      url: config.get("app.url"),
+      totalPrice: 0,
+      items,
+    }
+  );
+
+  await transporter.sendMail({
+    to: body.mail,
+    from: "VietPro Shop",
+    subject: "Thông tin đơn hàng",
+    html,
+  });
+
+  req.session.cart = [];
+  res.redirect(307, "/success");
 };

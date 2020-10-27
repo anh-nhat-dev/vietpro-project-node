@@ -13,7 +13,37 @@ module.exports.home = async (req, res) => {
 };
 
 module.exports.cart = (req, res) => {
-  res.render("site/cart");
+  const items = req.session.cart;
+
+  res.render("site/cart", { items, totalPrice: 0 });
+};
+
+module.exports.addToCart = async (req, res) => {
+  const body = req.body;
+
+  const items = req.session.cart;
+  let isUpdate = false;
+  items.map((item) => {
+    if (body.id === item.id) {
+      isUpdate = false;
+      item.qty += parseInt(body.qty);
+    }
+    return item;
+  });
+
+  if (!isUpdate) {
+    const product = await ProductModel.findById(body.id);
+    items.push({
+      id: product._id,
+      name: product.name,
+      price: product.price,
+      img: product.thumbnail,
+      qty: parseInt(body.qty),
+    });
+  }
+  req.session.cart = items;
+
+  return res.redirect("/cart");
 };
 
 module.exports.category = async (req, res) => {

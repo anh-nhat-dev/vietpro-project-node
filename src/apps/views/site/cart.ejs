@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%- include("layout/head", { title: `Danh mục sản phẩm - ${cate.title} ` }) %>
+    <%- include("layout/head", { title: `Giỏ hàng` }) %>
     <link rel="stylesheet" href="css/home.css" />
-    <link rel="stylesheet" href="css/category.css" />
+   <link rel="stylesheet" href="css/cart.css">
   </head>
   <body>
     <!--	Header	-->
@@ -20,45 +20,77 @@
             <%- include("layout/slide") %>
             <!--	End Slider	-->
 
-            <!--	List Product	-->
-            <div class="products">
-              <h3><%= cate.title %> (hiện có <%= total %> sản phẩm)</h3>
-              <div class="product-list card-deck">
-               <div class="product-list card-deck">
-                 <% for (let product of products) { %>
-                <%- include("components/product-item",   {product}) %>
-                <% } %>
-              </div>
-              </div>
-            </div>
-            <!--	End List Product	-->
-               <div id="pagination">
-                    <ul class="pagination">
-                      <% if (page > 1) { %>
-                      <li class="page-item">
-                        <a class="page-link" href="/category-<%= cate.slug %>.<%= cate.id %>?page=<%= page - 1 %>">Trang trước</a>
-                      </li>
-                      <% } %>
-
-                      <% for (let p of pages) { %>
-
-                        <% if (p === "...") { %>
-                        <li class="page-item <%= page === p  ? "active" : "" %>">
-                          <span class="page-link"><%= p %></span>
-                        </li>
-                        <% } else{  %>
-                        <li class="page-item <%= page === p  ? "active" : "" %>">
-                          <a class="page-link" href="/category-<%= cate.slug %>.<%= cate.id %>?page=<%= p %>"><%= p %></a>
-                        </li>
-                        <% } %>
-                      <% } %>
-                      <% if (page < totalPage) { %>
-                      <li class="page-item">
-                        <a class="page-link" href="/category-<%= cate.slug %>.<%= cate.id %>?page=<%= page + 1 %>">Trang sau</a>
-                      </li>
-                      <% } %>
-                    </ul> 
+          <!--	Cart	-->
+                <div id="my-cart">
+                	<div class="row">
+                        <div class="cart-nav-item col-lg-7 col-md-7 col-sm-12">Thông tin sản phẩm</div> 
+                        <div class="cart-nav-item col-lg-2 col-md-2 col-sm-12">Tùy chọn</div> 
+                        <div class="cart-nav-item col-lg-3 col-md-3 col-sm-12">Giá</div>    
+                    </div>  
+                    <form method="post">
+                    <% for (let item of items){ %>
+                    <% totalPrice += (item.qty * item.price) %>
+                    <div class="cart-item row">
+                        <div class="cart-thumb col-lg-7 col-md-7 col-sm-12">
+                        	<img src="/static/images/<%= item.img %>">
+                            <h4><%= item.name%></h4>
+                        </div> 
+                        
+                        <div class="cart-quantity col-lg- col-md-2 col-sm-12">
+                        	<input type="number" id="quantity" class="form-control form-blue quantity" value="<%= item.qty%>" min="1">
+                        </div> 
+                        <div class="cart-price col-lg-3 col-md-3 col-sm-12"><b><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price) %></b><a href="#">Xóa</a></div>    
+                    </div>
+                    <% } %> 
+                      
+                    <div class="row">
+                    	<div class="cart-thumb col-lg-7 col-md-7 col-sm-12">
+                        	<button id="update-cart" class="btn btn-success" type="submit" name="sbm">Cập nhật giỏ hàng</button>	
+                        </div> 
+                        <div class="cart-total col-lg-2 col-md-2 col-sm-12"><b>Tổng cộng:</b></div> 
+                        <div class="cart-price col-lg-3 col-md-3 col-sm-12"><b><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice) %></b></div>
+                    </div>
+                    </form>
+                               
                 </div>
+                <!--	End Cart	-->
+                
+                <!--	Customer Info	-->
+                <div id="customer">
+                	<form method="post">
+                    <div class="row">
+                    	
+                    	<div id="customer-name" class="col-lg-4 col-md-4 col-sm-12">
+                        	<input placeholder="Họ và tên (bắt buộc)" type="text" name="name" class="form-control" required>
+                        </div>
+                        <div id="customer-phone" class="col-lg-4 col-md-4 col-sm-12">
+                        	<input placeholder="Số điện thoại (bắt buộc)" type="text" name="phone" class="form-control" required>
+                        </div>
+                        <div id="customer-mail" class="col-lg-4 col-md-4 col-sm-12">
+                        	<input placeholder="Email (bắt buộc)" type="text" name="mail" class="form-control" required>
+                        </div>
+                        <div id="customer-add" class="col-lg-12 col-md-12 col-sm-12">
+                        	<input placeholder="Địa chỉ nhà riêng hoặc cơ quan (bắt buộc)" type="text" name="add" class="form-control" required>
+                        </div>
+                        
+                    </div>
+                    </form>
+                    <div class="row">
+                    	<div class="by-now col-lg-6 col-md-6 col-sm-12">
+                        	<a href="#">
+                            	<b>Mua ngay</b>
+                                <span>Giao hàng tận nơi siêu tốc</span>
+                            </a>
+                        </div>
+                        <div class="by-now col-lg-6 col-md-6 col-sm-12">
+                        	<a href="#">
+                            	<b>Trả góp Online</b>
+                                <span>Vui lòng call (+84) 0988 550 553</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--	End Customer Info	-->
           </div>
 
           <%- include("layout/sidebar") %>

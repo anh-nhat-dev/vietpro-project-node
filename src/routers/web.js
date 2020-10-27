@@ -27,6 +27,7 @@ router.get("/product-:slug.:id", SiteController.product);
 router.get("/search", SiteController.search);
 router.get("/success", SiteController.success);
 router.post("/comments", SiteController.comment);
+router.post("/add-to-cart", SiteController.addToCart);
 
 // Admin
 router

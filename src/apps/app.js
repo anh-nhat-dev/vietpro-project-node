@@ -22,6 +22,7 @@ app.use(
 
 // Kết nối tới database
 require("../common/database");
+app.use(require("../apps/middlewares/cart"));
 app.use(require("../apps/middlewares/share"));
 
 // Static file

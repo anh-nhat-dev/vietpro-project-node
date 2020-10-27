@@ -23,12 +23,10 @@
             <!--	List Product	-->
             <div class="products">
               <h3><%= cate.title %> (hiện có <%= total %> sản phẩm)</h3>
-              <div class="product-list card-deck">
                <div class="product-list card-deck">
                  <% for (let product of products) { %>
                 <%- include("components/product-item",   {product}) %>
                 <% } %>
-              </div>
               </div>
             </div>
             <!--	End List Product	-->

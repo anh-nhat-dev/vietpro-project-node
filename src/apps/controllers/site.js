@@ -25,7 +25,7 @@ module.exports.addToCart = async (req, res) => {
   let isUpdate = false;
   items.map((item) => {
     if (body.id === item.id) {
-      isUpdate = false;
+      isUpdate = true;
       item.qty += parseInt(body.qty);
     }
     return item;

@@ -163,8 +163,10 @@ module.exports.order = async (req, res) => {
   const items = req.session.cart;
   const body = req.body;
 
+  // Lấy ra đường dẫn thư mục views
   const viewPath = req.app.get("views");
 
+  // Compile ejs template sang HTML để gửi mail cho khác hàng
   const html = await ejs.renderFile(
     path.join(viewPath, "site/email-order.ejs"),
     {
@@ -175,6 +177,7 @@ module.exports.order = async (req, res) => {
     }
   );
 
+  // Gửi mail
   await transporter.sendMail({
     to: body.mail,
     from: "VietPro Shop",
@@ -182,6 +185,10 @@ module.exports.order = async (req, res) => {
     html,
   });
 
+  // Reset giỏ hàng
   req.session.cart = [];
+
+  // Chuyển về router /success
+  // Lưu ý: router /success có phương thức post
   res.redirect(307, "/success");
 };

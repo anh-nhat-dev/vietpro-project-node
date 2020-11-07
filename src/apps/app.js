@@ -1,6 +1,6 @@
 // Load module express
 const express = require("express");
-const session = require("express-session");
+const expressSession = require("express-session");
 const cookieParser = require("cookie-parser");
 
 // Khởi tạo ứng dụng từ express
@@ -9,16 +9,16 @@ const app = express();
 const config = require("config");
 // Lấy ra config của ứng dụng
 const appConfig = config.get("app");
-
 // set cookie & session
+
+const session = expressSession({
+  secret: appConfig.cookie_secret,
+  resave: true,
+  saveUninitialized: true,
+});
+
 app.use(cookieParser());
-app.use(
-  session({
-    secret: appConfig.cookie_secret,
-    resave: true,
-    saveUninitialized: true,
-  })
-);
+app.use(session);
 
 // Kết nối tới database
 require("../common/database");
@@ -39,4 +39,5 @@ app.use(express.json());
 app.use(require("../routers/web"));
 
 // Export cho module khác sử dụng
+app.session = session;
 module.exports = app;

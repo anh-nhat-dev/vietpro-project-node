@@ -3,6 +3,7 @@ const AuthController = require("../apps/controllers/auth");
 const AdminController = require("../apps/controllers/admin");
 const Productcontroller = require("../apps/controllers/product");
 const SiteController = require("../apps/controllers/site");
+const ChatController = require("../apps/controllers/chat");
 // Middleware
 const UploadMiddleware = require("../apps/middlewares/upload");
 
@@ -31,6 +32,10 @@ router.post("/comments", SiteController.comment);
 router.post("/add-to-cart", SiteController.addToCart);
 router.post("/cart", SiteController.updateCart);
 router.post("/order", SiteController.order);
+
+// Chat
+
+router.get("/chat", AuthMiddleware.checkUser, ChatController.chat);
 
 // Admin
 router

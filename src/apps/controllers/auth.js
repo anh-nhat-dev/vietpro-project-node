@@ -6,7 +6,7 @@ module.exports.login = (req, res) => {
 
 module.exports.postLogin = (req, res) => {
   const { email, password } = req.body;
-
+  const { redirect } = req.query;
   let error;
 
   UserModel.findOne({ email: email }).then((user) => {
@@ -21,7 +21,8 @@ module.exports.postLogin = (req, res) => {
       return res.render("admin/login", { error });
     }
     req.session.user = user;
-    res.redirect("/admin/dashboard");
+
+    res.redirect(redirect ? redirect : "/admin/dashboard");
   });
 };
 

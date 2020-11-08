@@ -1,6 +1,6 @@
 module.exports.checkUser = (req, res, next) => {
   if (!req.session.user) {
-    return res.redirect("/admin/login");
+    return res.redirect(`/admin/login?redirect=${req.originalUrl}`);
   }
   next();
 };

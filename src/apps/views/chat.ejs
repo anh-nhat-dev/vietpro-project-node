@@ -51,26 +51,23 @@
 
             <div class="row sideBar">
             <% for (let room of rooms) { %>
-            <div class="row sideBar-body">
-                <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                  <div class="avatar-icon">
-                    <img src="img/avatar1.png" />
-                  </div>
-                  
+            <div class="row sideBar-body" id="room-<%= room._id %>">
+              <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                <div class="avatar-icon">
+                  <img src="img/avatar1.png" />
                 </div>
-                <div class="col-sm-9 col-xs-9 sideBar-main">
-                  <div class="row">
-                    <div class="col-sm-8 col-xs-8 sideBar-name">
-                      <span class="name-meta">
-                        <%= room.name ? room.name : room.users.filter(u => u.id !== user._id).map(u => u.full_name).join(",") %>
-                      </span>
-                    </div>
-                    <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                      <span class="time-meta pull-right">18:18 </span>
-                    </div>
+                
+              </div>
+              <div class="col-sm-9 col-xs-9 sideBar-main">
+                <div class="row">
+                  <div class="col-sm-8 col-xs-8 sideBar-name">
+                    <span class="name-meta">
+                      <%= room.name ? room.name : room.users.filter(u => u.id !== user._id).map(u => u.full_name).join(",") %>
+                    </span>
                   </div>
                 </div>
               </div>
+            </div>
             <% } %>
             </div>
           </div>
@@ -102,9 +99,11 @@
               </div>
             </div>
 
-            <div class="row compose-sideBar">
+            <div class="row compose-sideBar" >
+
               <% for (let u of users) { %>
-                <div class="row sideBar-body">
+
+                <div class="row sideBar-body" id="user-<%= u._id %>">
                 <div class="col-sm-3 col-xs-3 sideBar-avatar">
                   <div class="avatar-icon">
                     <img src="img/avatar1.png" />
@@ -115,13 +114,13 @@
                     <div class="col-sm-8 col-xs-8 sideBar-name">
                       <span class="name-meta"><%= u.full_name %></span>
                     </div>
-                    <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                      <span class="time-meta pull-right">18:18 </span>
-                    </div>
                   </div>
                 </div>
               </div>
+
               <% } %>
+
+              
             </div>
           </div>
 
@@ -198,6 +197,102 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+
+        let current_room_id, current_user_id = `<%= user._id %>`;
+
+        function startConversation(data){
+          socket.emit("START_CONVERSATION", data)
+        }
+
+        function getMessage(){
+          socket.emit("GET_MESSAGE", { id: current_room_id })
+        }
+
+        function newMessage() {
+          const val = $("#comment").val();
+          socket.emit("NEW_MESSAGE", {
+            authorID: current_user_id,
+            roomID: current_room_id,
+            body: val
+          });
+          $("#comment").val("");
+        }
+
+
+        function renderRoom(room){
+            const html = `<div class="row sideBar-body" id="room-${room._id}">
+              <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                <div class="avatar-icon">
+                  <img src="img/avatar1.png" />
+                </div>
+              </div>
+              <div class="col-sm-9 col-xs-9 sideBar-main">
+                <div class="row">
+                  <div class="col-sm-8 col-xs-8 sideBar-name">
+                    <span class="name-meta">
+                      ${room.name ? 
+                      room.name : 
+                      room.users.filter(u => u._id !== current_user_id).map(u => u.full_name).join(",")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+            $(".side-one .sideBar").prepend(html);
+        }
+
+        // Lắng nghe sự kiện từ javascript
+        $(document).on("click", ".sideBar-body", function(e){
+          // Lấy tham chiếu tới phần tử html được click dưới dạng jquery
+          const self = $(this);
+          // Lấy ra thuộc tính id của phần tử html
+          const id_attr = self.attr("id");
+          // Sử dụng split để  tách chuỗi id có dạng "type-id" 
+          const [type, id] = id_attr.split("-");
+          // Gửi một sự kiện lên server để thông báo cho server bắt đầu cuộc hội thoại
+          startConversation({ type, id });
+          // Trường hợp ở tab new message thì ẩn tab đi
+          $(".newMessage-back").click();
+        });
+        
+        $("#comment").on("keyup", function(){
+           
+          if (e.keyCode === 13) {
+            // Nếu nhận shif + enter sẽ xuống dòng
+            if (e.shiftKey) {
+              inputElement.val(val + "\n");
+              e.stopPropagation();
+            } else if (val) {
+              newMessage();
+            }
+          }
+        })
+
+        // Lắng nghe tự kiện từ server
+
+        socket.on("START_CONVERSATION_SUCCESS", function(data){
+          const room = data.room;
+          // Set lại room hiện tại
+          current_room_id = room._id;
+          // Lấy ra danh sách message của room hiện tại
+          getMessage();
+          // Xóa các tin nhắn của hội thoại cũ
+          $("#conversation").empty();
+          // Xóa active room cũ
+          $(".side-one").find(".active").removeClass("active");
+          // Nếu room chưa tồn tại thì thêm mới vào HTMl
+          if (!$(`#room-${room._id}`).length) {
+            renderRoom(room)
+          }
+          // Active room hiện tại
+          $(`#room-${room._id}`).addClass("active");
+          
+        });
+
+
+
+
     </script>
 
     <script>

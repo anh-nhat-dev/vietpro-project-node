@@ -174,7 +174,8 @@ body {
   cursor: pointer;
 }
 
-.sideBar-body:hover {
+.sideBar-body:hover,
+.sideBar-body.active {
   background-color: #f2f2f2;
 }
 

@@ -12,13 +12,14 @@ const appConfig = config.get("app");
 
 // set cookie & session
 app.use(cookieParser());
-app.use(
-  session({
-    secret: appConfig.cookie_secret,
-    resave: true,
-    saveUninitialized: true,
-  })
-);
+
+const sessionDriver = session({
+  secret: appConfig.cookie_secret,
+  resave: true,
+  saveUninitialized: true,
+});
+
+app.use(sessionDriver);
 
 // Kết nối tới database
 require("../common/database");
@@ -39,4 +40,5 @@ app.use(express.json());
 app.use(require("../routers/web"));
 
 // Export cho module khác sử dụng
+app.session = sessionDriver;
 module.exports = app;
